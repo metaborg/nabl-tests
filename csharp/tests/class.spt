@@ -1,0 +1,56 @@
+module Class
+
+language CSharp
+
+setup Header [[
+	class Bool {}
+	class Int {}
+	class String {}
+]]
+
+test Class definition [[
+	namespace ClassTests {
+		class A {}
+	}
+]]
+
+test Class reference 1 [[
+	namespace ClassTests {
+		class [[A]] {}
+		class B { [[A]] a; }
+	}
+]] resolve #2 to #1
+
+test Class reference 2 [[
+	namespace ClassTests {
+		class [[A]] {}
+		class B : [[A]] {}
+	}
+]] resolve #2 to #1
+
+test Unresolved class [[
+	namespace ClassTests {
+		class A { [[C]] c; }
+	}
+]] 1 error
+
+test Duplicate class 1 [[
+  namespace ClassTests {
+    [[class A {}]]
+    [[class A {}]]
+  }
+]] 2 errors
+
+test Duplicate class 2 [[
+  namespace ClassTests {
+    [[class A {}]]
+    [[partial class A {}]]
+  }
+]] 2 errors
+
+test Duplicate partial class [[
+  namespace ClassTests {
+    partial class A {}
+    partial class A {}
+  }
+]]

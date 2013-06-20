@@ -1,0 +1,50 @@
+module Entity
+
+language WebDSL
+
+setup Header [[
+	module EntityTest
+]]
+
+test Entity definition 1 [[
+	entity EA {}
+]]
+
+test Entity definition 2 [[
+	entity EA {}
+	extend entity EA {}
+]]
+
+test Entity reference 1 [[
+	entity [[EA]] {}
+	entity EB { a -> [[EA]] }
+]] resolve #2 to #1
+
+test Entity reference 2 [[
+	entity [[EA]] {}
+	entity EB : [[EA]] {}
+]] resolve #2 to #1
+
+test Unresolved entity 1 [[
+	entity EA { b -> [[EB]] }
+]] 1 error
+
+test Unresolved entity 2 [[
+	entity EA : [[EB]] {}
+]] 1 error
+
+test Unresolved entity 3 [[
+	entity EA {}
+	extend entity [[EB]] {}
+]] 1 error
+
+test Duplicate entity [[
+	[[entity EA {}]]
+	[[entity EA {}]]
+]] 2 errors
+
+test Duplicate extend entity [[
+	entity EA {}
+	extend entity EA {}
+	extend entity EA {}
+]]

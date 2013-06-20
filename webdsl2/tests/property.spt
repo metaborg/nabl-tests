@@ -1,0 +1,230 @@
+module Property
+
+language WebDSL
+
+setup Header [[
+	module PropertyTest
+]]
+
+test Property definition 1 [[
+	entity PA {
+		a -> PA
+	}
+]]
+
+test Property definition 2 [[
+	entity PA {
+		i :: Int
+	}
+]]
+
+test Property definition 3 [[
+	entity PA {}
+	extend entity PA {
+		i :: Int
+	}
+]]
+
+test Property reference 1 [[
+	entity PA {
+		[[a]] -> PA
+		
+		function test() {
+			return [[a]];
+		}
+	}
+]] resolve #2 to #1
+
+test Property reference 2 [[
+	entity PA {
+		[[i]] :: Int
+	}
+	extend entity PA {
+		function test() {
+			return [[i]];
+		}
+	}
+]] resolve #2 to #1
+
+test Property reference 3 [[
+	entity PA {
+		function test() {
+			return [[i]];
+		}
+	}
+	extend entity PA {
+		[[i]] :: Int
+	}
+]] resolve #1 to #2
+
+test Property reference 3 [[
+	entity PA {
+		[[i]] :: Int
+	}
+	entity PB : PA {
+		function test() {
+			return [[i]];
+		}
+	}
+]] resolve #2 to #1
+
+test Property reference 4 [[
+	entity PA {}
+	extend entity PA {
+		[[i]] :: Int
+	}
+	entity PB : PA {
+		function test() {
+			return [[i]];
+		}
+	}
+]] resolve #2 to #1
+
+// TODO: is this valid WebDSL?
+/*
+test Property reference 5 [[
+	entity PA {
+		[[i]] :: Int
+	}
+	entity PB : PA {}
+	extend entity PB {
+		function test() {
+			return [[i]];
+		}
+	}
+]] resolve #2 to #1
+*/
+
+test Property access 1 [[
+	entity PA {
+		[[a]] -> PA
+		
+		function test() {
+			return a.[[a]];
+		}
+	}
+]] resolve #2 to #1
+
+test Property access 2 [[
+	entity PA {
+		b -> PB
+	}
+	entity PB {
+		[[a]] -> PA
+	}
+	entity PC {
+		b -> PB
+		function test() {
+			return b.a.b.[[a]];
+		}
+	}
+]] resolve #2 to #1
+
+test Property access 3 [[
+	entity PA {}
+	extend entity PA {
+		[[i]] :: Int
+	}
+	
+	entity PB {
+		a -> PA
+		function test() {
+			return a.[[i]];
+		}
+	}
+]] resolve #2 to #1
+
+test Property access 4 [[
+	entity PA {
+		[[i]] :: Int
+	}
+	entity PB : PA {}
+	
+	entity PC {
+		b -> PB
+		function test() {
+			return b.[[i]];
+		}
+	}
+]] resolve #2 to #1
+
+// TODO: is this valid WebDSL?
+/*
+test Property access 5 [[
+	entity PA {
+		[[a]] -> PA
+	}
+	entity PB : PA {}
+	
+	extend entity PB {
+		function test() {
+			return a.[[a]];
+		}
+	}
+]] resolve #2 to #1
+*/
+
+test Unresolved property 1 [[
+	entity PA {
+		function test() {
+			return [[a]];
+		}
+	}
+	entity PB { 
+		a -> PA
+	}
+]] 1 error
+
+test Unresolved property 2 [[
+	entity PA {}
+	extend entity PA {
+		function test() {
+			return [[a]];
+		}
+	}
+	entity PC { 
+		a -> PA
+	}
+]] 1 error
+
+test Unresolved property access 1 [[
+	entity PA {
+		a -> PA
+		
+		function test() {
+			return a.[[b]];
+		}
+	}
+]] 1 error
+
+test Unresolved property access 2 [[
+	entity PA {}
+	extend entity PA {
+		i :: Int
+	}
+	
+	entity PB {
+		a -> PA
+		function test() {
+			return a.[[s]];
+		}
+	}
+]] 1 error
+
+test Duplicate property 1 [[
+	entity PA {
+		[[a -> PA]]
+		[[a :: Int]]
+	}
+]] 2 errors
+
+test Duplicate property 2 [[
+	entity PA {
+		[[a -> PA]]
+		[[a :: Int]]
+	}
+	extend entity PA {
+		[[a -> PA]]
+		[[a :: Int]]
+	}
+]] 4 errors

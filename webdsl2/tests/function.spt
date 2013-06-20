@@ -1,0 +1,262 @@
+module Function
+
+language WebDSL
+
+setup Header [[
+	module FunctionTest
+]]
+
+
+//
+// Definitions
+//
+
+test Entity function definition 1 [[
+	entity FA {
+		function A() {}
+	}
+]]
+
+test Entity function definition 2 [[
+	entity FA {
+		function A(a : Int, b : String) {}
+	}
+]]
+
+test Global function definition 1 [[
+	function FA() {}
+]]
+
+test Global function definition 2 [[
+	function FA(a : Float, b : Text) {}
+]]
+
+
+//
+// Succeeding thiscalls
+//
+
+test Entity thiscall 1 [[
+	entity FA {
+		function A() {}
+		function A(a : Int) {}
+		function [[A]](a : Int, b : String) {}
+		
+		function test() {
+			return [[A]](1, "String");
+		}
+	}
+]] resolve #2 to #1
+
+test Entity thiscall 2 [[
+	entity FA {
+		function A() {}
+		function [[A]](a : Int) {}
+		function A(a : String, b : Float) {}
+	}
+	extend entity FA {
+		function test() {
+			return [[A]](1);
+		}
+	}
+]] resolve #2 to #1
+
+test Entity thiscall 3 [[
+	entity FA {
+		function test() {
+			return [[A]]();
+		}
+	}
+	extend entity FA {
+		function [[A]]() {}
+		function A(a : Float) {}
+		function A(a : Float, b : int) {}
+	}
+]] resolve #1 to #2
+
+test Entity thiscall 4 [[
+	entity FA {
+		function A() {}
+		function A(a : Int) {}
+		function A(a : Int, b : String) {}
+		function [[A]](a : Int, b : String, c : Float) {}
+	}
+	entity FB : FA {
+		function test() {
+			return [[A]](1, "String", 0.1);
+		}
+	}
+]] resolve #1 to #2
+
+test Entity thiscall 5 [[
+	entity FA {
+		a -> FA
+		function A() {}
+		function [[A]](a : FA) : FA { return a; }
+		function A(a : Int, b : String) {}
+		
+		function test() {
+			return A(1, "String").[[A]](FA);
+		}
+	}
+]] resolve #2 to #1
+
+
+//
+// Succeeding expression calls
+//
+
+test Entity expression call 1 [[
+	entity FA {
+		function [[A]]() {}
+		function A(a : Int) {}
+		function A(a : String, b : Float) {}
+	}
+	entity FB {
+		a -> FA
+		
+		function test() {
+			return a.[[A]]();
+		}
+	}
+]] resolve #2 to #1
+
+test Entity expression call 2 [[
+	entity FA {
+		function A() {}
+		function [[A]](a : FA) {}
+		function A(a : String, b : Float) {}
+	}
+	entity FB {
+		a -> FA
+	}
+	extend entity FB {
+		function test() {
+			return a.[[A]](a);
+		}
+	}
+]] resolve #2 to #1
+
+test Entity expression call 3 [[
+	entity FA {}
+	extend entity FA {
+		function A() {}
+		function A(a : Float) {}
+		function [[A]](a : String, b : Float) {}
+	}
+	entity FB {
+		a -> FA
+		
+		function test() {
+			return a.[[A]]("String", 0.1);
+		}
+	}
+]] resolve #1 to #2
+
+test Entity expression call 4 [[
+	entity FA {
+		function A() {}
+		function A(a : Int) {}
+		function A(a : String, b : Float) {}
+		function [[A]](a : Int, b : Float, c : String, d : FB) {}
+	}
+	entity FB : FA {}
+	entity FC {
+		b -> FB
+		
+		function test() {
+			return b.[[A]](1, 0.1, "String", b);
+		}
+	}
+]] resolve #1 to #2
+
+test Entity expression call 5 [[
+	entity FA {
+		b -> FB
+		function A(): FB { return b; }
+		function A(a : FA) : FB { return b; }
+		function A(a : Int, b : String): Int { return a; }
+	}
+	entity FB  {
+		a -> FA
+		function B() : FA { return a; }
+		function B(a : FA) : FA { return a; }
+		function [[B]](a : Int, b : String) : String { return b; }
+	}
+	
+	entity FC {
+		b -> FB
+		function test() {
+			return b.B(a).A().[[B]](3, "String");
+		}
+	}
+]] resolve #1 to #2
+
+
+//
+// Unresoved functions
+//
+
+test Unresolved function 1 [[
+	entity FA {
+		function test() {
+			return [[A]]();
+		}
+	}
+]] 1 error
+
+test Unresolved function 2 [[
+	entity FA {
+		b -> FB
+		function test() {
+			return b.[[B]]();
+		}
+	}
+	entity FB {}
+]] 1 error
+
+test Unresolved function 3 [[
+	entity FA {
+		function A() {}
+		function A(a : Int) {}
+		function A(a : String, b : Float) {}
+		function A(a : Int, b : Float, c : String, d : FA) {}
+		
+		function test() {
+			return [[A]]("String", 0.1, 1);
+		}
+	}
+]] 1 error
+
+
+//
+// Duplicates
+//
+
+test Duplicate entity function 1 [[
+	entity FA {
+		[[function A() {}]]
+		[[function A() {}]]
+	}
+]] 2 errors
+
+test Duplicate entity function 2 [[
+	entity FA {
+		function A() {}
+		function A(A : Int, b : String) {}
+		[[function A(a : Int, b : Float) {}]]
+		[[function A(a : Int, b : Float) {}]]
+	}
+]] 2 errors
+
+test Duplicate global function 1 [[
+	[[function A() {}]]
+	[[function A() {}]]
+]] 2 errors
+
+test Duplicate global function 2 [[
+	function A() {}
+	function A(A : Int, b : String) {}
+	[[function A(a : Int, b : Float) {}]]
+	[[function A(a : Int, b : Float) {}]]
+]] 2 errors

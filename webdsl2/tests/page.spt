@@ -1,0 +1,56 @@
+module Page
+
+language WebDSL
+
+setup Header [[
+	module PageTest
+]]
+
+test Page definition 1 [[
+	page A() {}
+]]
+
+test Page definition 2 [[
+	page A(a : Int, b : String) {}
+]]
+
+test Page reference 1 [[
+	page [[A]]() {
+		navigate [[A]]() {}
+	}
+]] resolve #2 to #1
+
+test Page reference 2 [[
+	page A() {
+		navigate A() {}
+	}
+	page [[A]](a : Int, b : String) {
+		navigate [[A]](1, "String") {}
+	}
+]] resolve #2 to #1
+
+test Unresolved page 1 [[
+	page A() {
+		navigate [[B]]() {}
+	}
+]] 1 error
+
+test Unresolved page 2 [[
+	page A() {
+		navigate A() {}
+	}
+	page A(a : Int, b : String) {
+		navigate [[A]](1, "String", 0.1) {}
+	}
+]] 1 error
+
+test Duplicate page 1 [[
+	[[page A() {}]]
+	[[page A() {}]]
+]] 2 errors
+
+test Duplicate page 2 [[
+	page A() {}
+	[[page A(a : Int) {}]]
+	[[page A(a : Int) {}]]
+]] 2 errors
