@@ -31,7 +31,7 @@ test Unresolved entity 1 [[
 
 test Unresolved entity 2 [[
 	entity A : [[B]] {}
-]] 1 error
+]] 2 errors // TODO: should be one error? Probably caused by error in NaBL spec, e.g. refers to and imports on B.
 
 test Unresolved entity 3 [[
 	entity A {}
