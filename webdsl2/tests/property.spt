@@ -7,27 +7,27 @@ setup Header [[
 ]]
 
 test Property definition 1 [[
-	entity PA {
-		a -> PA
+	entity A {
+		a -> A
 	}
 ]]
 
 test Property definition 2 [[
-	entity PA {
+	entity A {
 		i :: Int
 	}
 ]]
 
 test Property definition 3 [[
-	entity PA {}
-	extend entity PA {
+	entity A {}
+	extend entity A {
 		i :: Int
 	}
 ]]
 
 test Property reference 1 [[
-	entity PA {
-		[[a]] -> PA
+	entity A {
+		[[a]] -> A
 		
 		function test() {
 			return [[a]];
@@ -36,10 +36,10 @@ test Property reference 1 [[
 ]] resolve #2 to #1
 
 test Property reference 2 [[
-	entity PA {
+	entity A {
 		[[i]] :: Int
 	}
-	extend entity PA {
+	extend entity A {
 		function test() {
 			return [[i]];
 		}
@@ -47,21 +47,21 @@ test Property reference 2 [[
 ]] resolve #2 to #1
 
 test Property reference 3 [[
-	entity PA {
+	entity A {
 		function test() {
 			return [[i]];
 		}
 	}
-	extend entity PA {
+	extend entity A {
 		[[i]] :: Int
 	}
 ]] resolve #1 to #2
 
 test Property reference 3 [[
-	entity PA {
+	entity A {
 		[[i]] :: Int
 	}
-	entity PB : PA {
+	entity B : A {
 		function test() {
 			return [[i]];
 		}
@@ -69,11 +69,11 @@ test Property reference 3 [[
 ]] resolve #2 to #1
 
 test Property reference 4 [[
-	entity PA {}
-	extend entity PA {
+	entity A {}
+	extend entity A {
 		[[i]] :: Int
 	}
-	entity PB : PA {
+	entity B : A {
 		function test() {
 			return [[i]];
 		}
@@ -83,11 +83,11 @@ test Property reference 4 [[
 // TODO: is this valid WebDSL?
 /*
 test Property reference 5 [[
-	entity PA {
+	entity A {
 		[[i]] :: Int
 	}
-	entity PB : PA {}
-	extend entity PB {
+	entity B : A {}
+	extend entity B {
 		function test() {
 			return [[i]];
 		}
@@ -96,8 +96,8 @@ test Property reference 5 [[
 */
 
 test Property access 1 [[
-	entity PA {
-		[[a]] -> PA
+	entity A {
+		[[a]] -> A
 		
 		function test() {
 			return a.[[a]];
@@ -106,14 +106,14 @@ test Property access 1 [[
 ]] resolve #2 to #1
 
 test Property access 2 [[
-	entity PA {
-		b -> PB
+	entity A {
+		b -> B
 	}
-	entity PB {
-		[[a]] -> PA
+	entity B {
+		[[a]] -> A
 	}
-	entity PC {
-		b -> PB
+	entity C {
+		b -> B
 		function test() {
 			return b.a.b.[[a]];
 		}
@@ -121,13 +121,13 @@ test Property access 2 [[
 ]] resolve #2 to #1
 
 test Property access 3 [[
-	entity PA {}
-	extend entity PA {
+	entity A {}
+	extend entity A {
 		[[i]] :: Int
 	}
 	
-	entity PB {
-		a -> PA
+	entity B {
+		a -> A
 		function test() {
 			return a.[[i]];
 		}
@@ -135,13 +135,13 @@ test Property access 3 [[
 ]] resolve #2 to #1
 
 test Property access 4 [[
-	entity PA {
+	entity A {
 		[[i]] :: Int
 	}
-	entity PB : PA {}
+	entity B : A {}
 	
-	entity PC {
-		b -> PB
+	entity C {
+		b -> B
 		function test() {
 			return b.[[i]];
 		}
@@ -151,12 +151,12 @@ test Property access 4 [[
 // TODO: is this valid WebDSL?
 /*
 test Property access 5 [[
-	entity PA {
-		[[a]] -> PA
+	entity A {
+		[[a]] -> A
 	}
-	entity PB : PA {}
+	entity B : A {}
 	
-	extend entity PB {
+	extend entity B {
 		function test() {
 			return a.[[a]];
 		}
@@ -165,31 +165,31 @@ test Property access 5 [[
 */
 
 test Unresolved property 1 [[
-	entity PA {
+	entity A {
 		function test() {
 			return [[a]];
 		}
 	}
-	entity PB { 
-		a -> PA
+	entity B { 
+		a -> A
 	}
 ]] 1 error
 
 test Unresolved property 2 [[
-	entity PA {}
-	extend entity PA {
+	entity A {}
+	extend entity A {
 		function test() {
 			return [[a]];
 		}
 	}
-	entity PC { 
-		a -> PA
+	entity C { 
+		a -> A
 	}
 ]] 1 error
 
 test Unresolved property access 1 [[
-	entity PA {
-		a -> PA
+	entity A {
+		a -> A
 		
 		function test() {
 			return a.[[b]];
@@ -198,13 +198,13 @@ test Unresolved property access 1 [[
 ]] 1 error
 
 test Unresolved property access 2 [[
-	entity PA {}
-	extend entity PA {
+	entity A {}
+	extend entity A {
 		i :: Int
 	}
 	
-	entity PB {
-		a -> PA
+	entity B {
+		a -> A
 		function test() {
 			return a.[[s]];
 		}
@@ -212,19 +212,19 @@ test Unresolved property access 2 [[
 ]] 1 error
 
 test Duplicate property 1 [[
-	entity PA {
-		[[a -> PA]]
+	entity A {
+		[[a -> A]]
 		[[a :: Int]]
 	}
 ]] 2 errors
 
 test Duplicate property 2 [[
-	entity PA {
-		[[a -> PA]]
+	entity A {
+		[[a -> A]]
 		[[a :: Int]]
 	}
-	extend entity PA {
-		[[a -> PA]]
+	extend entity A {
+		[[a -> A]]
 		[[a :: Int]]
 	}
 ]] 4 errors

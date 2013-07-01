@@ -3,12 +3,10 @@ module Class
 language CSharp
 
 setup Header [[
-	class Bool {}
-	class Int {}
-	class String {}
+
 ]]
 
-test Class definition [[
+test Class definition [[  
 	namespace ClassTests {
 		class A {}
 	}
@@ -26,9 +24,9 @@ test Class reference 2 [[
 		class [[A]] {}
 		class B : [[A]] {}
 	}
-]] resolve #2 to #1
+]] resolve #2 to #1 
 
-test Unresolved class [[
+test Unresolved class [[ 
 	namespace ClassTests {
 		class A { [[C]] c; }
 	}
@@ -44,9 +42,9 @@ test Duplicate class 1 [[
 test Duplicate class 2 [[
   namespace ClassTests {
     [[class A {}]]
-    [[partial class A {}]]
+    partial class A {}
   }
-]] 2 errors
+]] 1 errors // TODO: should there should be another error on the partial class?
 
 test Duplicate partial class [[
   namespace ClassTests {
