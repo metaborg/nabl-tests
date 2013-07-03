@@ -3,7 +3,9 @@ namespace qualified {
     namespace B {
       
       class C {
-        A.B.C c;
+        A.B.C abc;
+        B.C   bc;
+        C     c;
       }
 
     }
