@@ -3,7 +3,9 @@ module Tests-Resolving
 language CSharp
 
 setup Header [[
-
+	class Bool {}
+	class Int {}
+	class String {}
 ]]
 
 test Resolve class reference [[

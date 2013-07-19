@@ -5,6 +5,10 @@ language CSharp
 setup Header [[
   using Hidden;
   
+	class Bool {}
+	class Int {}
+	class String {}
+  
 	namespace Tests {
     class A {
       P p;

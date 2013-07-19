@@ -3,7 +3,9 @@ module Class
 language CSharp
 
 setup Header [[
-
+	class Bool {}
+	class Int {}
+	class String {}
 ]]
 
 test Class definition [[  

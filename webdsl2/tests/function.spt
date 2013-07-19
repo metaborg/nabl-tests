@@ -4,6 +4,12 @@ language WebDSL
 
 setup Header [[
 	module FunctionTest
+	
+	entity Entity {}
+	type Void {}
+	type Int {}
+	type Float {}
+	type String {}
 ]]
 
 

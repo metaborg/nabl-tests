@@ -4,6 +4,12 @@ language WebDSL
 
 setup Header [[
 	module PropertyTest
+	
+	entity Entity {}
+	type Void {}
+	type Int {}
+	type Float {}
+	type String {}
 ]]
 
 test Property definition 1 [[

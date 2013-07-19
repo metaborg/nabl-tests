@@ -4,6 +4,12 @@ language WebDSL
 
 setup Header [[
 	module EntityTest
+	
+	entity Entity {}
+	type Void {}
+	type Int {}
+	type Float {}
+	type String {}
 ]]
 
 test Entity definition 1 [[
