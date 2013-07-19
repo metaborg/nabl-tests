@@ -41,7 +41,6 @@ test Property reference 1 [[
 	}
 ]] resolve #2 to #1
 
-// TODO: this works in a normal .app file, but not in this test?
 test Property reference 2 [[
 	entity A {
 		[[i]] :: Int
@@ -53,7 +52,6 @@ test Property reference 2 [[
 	}
 ]] resolve #2 to #1
 
-// TODO: this works in a normal .app file, but not in this test?
 test Property reference 3 [[
 	entity A {
 		function test() {
@@ -66,7 +64,7 @@ test Property reference 3 [[
 ]] resolve #1 to #2
 
 // TODO: this works in a normal .app file, but not in this test?
-test Property reference 3 [[
+test Property reference 4 [[
 	entity A {
 		[[i]] :: Int
 	}
@@ -78,7 +76,7 @@ test Property reference 3 [[
 ]] resolve #2 to #1
 
 // TODO: this works in a normal .app file, but not in this test?
-test Property reference 4 [[
+test Property reference 5 [[
 	entity A {}
 	extend entity A {
 		[[i]] :: Int
